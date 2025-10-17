@@ -1,0 +1,128 @@
+{
+  "expo": {
+    "name": "AI Agent Studio Pro",
+    "slug": "ai-agent-studio-pro",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aiagent.studio.pro",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses camera to capture photos and videos for AI processing",
+        "NSMicrophoneUsageDescription": "This app uses microphone to record audio for AI generation",
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to save generated content",
+        "NSLocationWhenInUseUsageDescription": "Location is used for geo-tagging generated content",
+        "NSFaceIDUsageDescription": "Face ID is used for secure authentication"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.aiagent.studio.pro",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_WIFI_STATE",
+        "WAKE_LOCK",
+        "VIBRATE",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT",
+        "SYSTEM_ALERT_WINDOW",
+        "RECEIVE_BOOT_COMPLETED",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "FOREGROUND_SERVICE",
+        "REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+      ],
+      "config": {
+        "googleServicesFile": "./google-services.json"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "AI Agent Studio Pro",
+      "description": "The Ultimate Mobile AI Creative Suite",
+      "themeColor": "#000000",
+      "backgroundColor": "#000000"
+    },
+    "plugins": [
+      "expo-dev-client",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow AI Agent Studio to access camera for capturing content",
+          "microphonePermission": "Allow AI Agent Studio to access microphone for audio recording",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow AI Agent Studio to access photos for AI processing and saving generated content",
+          "savePhotosPermission": "Allow AI Agent Studio to save generated images and videos"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#000000",
+          "defaultChannel": "ai-generation-updates"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow AI Agent Studio to access location for geo-tagging content"
+        }
+      ],
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": true,
+          "modes": ["peripheral", "central"],
+          "bluetoothAlwaysPermission": "Allow AI Agent Studio to connect with AI hardware devices via Bluetooth"
+        }
+      ],
+      "expo-font",
+      "expo-av"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "turboModules": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ai-agent-studio-pro-id"
+      }
+    },
+    "owner": "aiagent-studio",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ai-agent-studio-pro-id"
+    }
+  }
+}

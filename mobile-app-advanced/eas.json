@@ -1,0 +1,74 @@
+{
+  "cli": {
+    "version": ">= 5.9.1"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug",
+        "buildType": "apk"
+      },
+      "ios": {
+        "buildConfiguration": "Debug",
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease",
+        "image": "latest"
+      },
+      "ios": {
+        "buildConfiguration": "Release",
+        "simulator": false
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "aab",
+        "gradleCommand": ":app:bundleRelease",
+        "image": "latest"
+      },
+      "ios": {
+        "buildConfiguration": "Release",
+        "simulator": false
+      }
+    },
+    "pro-optimized": {
+      "extends": "production",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease",
+        "image": "latest",
+        "env": {
+          "EXPO_OPTIMIZE": "1",
+          "EXPO_USE_HERMES": "1",
+          "EXPO_USE_FABRIC": "1",
+          "EXPO_ENABLE_PROGUARD": "1"
+        }
+      },
+      "env": {
+        "EXPO_PERFORMANCE_MODE": "1",
+        "EXPO_AI_OPTIMIZATION": "1",
+        "POCO_X6_PRO_OPTIMIZATION": "1"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-play-service-account.json",
+        "track": "internal"
+      },
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "1234567890",
+        "appleTeamId": "ABCDEF1234"
+      }
+    }
+  }
+}
