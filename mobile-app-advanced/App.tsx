@@ -88,17 +88,22 @@ export default function App() {
     try {
       console.log('🚀 Initializing AI Agent Studio Pro...');
 
-      // 1. Load fonts with performance optimization
-      await Font.loadAsync({
-        'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
-        'Inter-Medium': require('./assets/fonts/Inter-Medium.ttf'),
-        'Inter-SemiBold': require('./assets/fonts/Inter-SemiBold.ttf'),
-        'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
-        'SpaceGrotesk-Regular': require('./assets/fonts/SpaceGrotesk-Regular.ttf'),
-        'SpaceGrotesk-Bold': require('./assets/fonts/SpaceGrotesk-Bold.ttf'),
-      }).catch(() => {
-        console.warn('Fonts failed to load, using system fonts');
-      });
+      // 1. Load fonts with performance optimization (graceful fallback)
+      try {
+        await Font.loadAsync({
+          // Try to load custom fonts, fallback to system fonts if not available
+          'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+          'Inter-Medium': require('./assets/fonts/Inter-Medium.ttf'),
+          'Inter-SemiBold': require('./assets/fonts/Inter-SemiBold.ttf'),
+          'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
+          'SpaceGrotesk-Regular': require('./assets/fonts/SpaceGrotesk-Regular.ttf'),
+          'SpaceGrotesk-Bold': require('./assets/fonts/SpaceGrotesk-Bold.ttf'),
+        });
+        console.log('✅ Custom fonts loaded successfully');
+      } catch (fontError) {
+        console.warn('⚠️ Custom fonts not available, using system fonts:', fontError);
+        // Continue without custom fonts - system fonts will be used
+      }
 
       // 2. Initialize device information and optimizations
       const deviceInfo = await Device.getDeviceTypeAsync();
