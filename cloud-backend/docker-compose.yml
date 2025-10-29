@@ -1,0 +1,96 @@
+# AI Agent Studio Cloud - Docker Compose Configuration
+# For local development and cloud deployment
+
+version: '3.8'
+
+services:
+  # Main API Server
+  ai-studio-cloud:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-studio-cloud-api
+    ports:
+      - "7860:7860"
+    environment:
+      - ENV=production
+      - PORT=7860
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+      - JWT_SECRET=${JWT_SECRET:-default-secret-change-in-production}
+      - CLOUD_STORAGE_PROVIDER=${CLOUD_STORAGE_PROVIDER:-local}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_BUCKET_NAME=${AWS_BUCKET_NAME}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GCP_BUCKET_NAME=${GCP_BUCKET_NAME}
+      - AZURE_ACCOUNT_NAME=${AZURE_ACCOUNT_NAME}
+      - AZURE_ACCOUNT_KEY=${AZURE_ACCOUNT_KEY}
+      - AZURE_CONTAINER_NAME=${AZURE_CONTAINER_NAME}
+    volumes:
+      - storage_data:/tmp/ai_studio_storage
+      - ./logs:/app/logs
+    networks:
+      - ai-studio-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  # Redis for task queue and caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: ai-studio-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - ai-studio-network
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.2'
+
+  # Nginx proxy (for production)
+  nginx:
+    image: nginx:alpine
+    container_name: ai-studio-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - ai-studio-network
+    depends_on:
+      - ai-studio-cloud
+    restart: unless-stopped
+    profiles: ["production"]
+
+volumes:
+  storage_data:
+    driver: local
+  redis_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  ai-studio-network:
+    driver: bridge
