@@ -307,6 +307,197 @@ class CloudAPIServiceClass {
     this.authToken = null;
     await AsyncStorage.removeItem('auth_token');
   }
+
+  // ADVANCED AI FEATURES
+
+  // Image to Video Generation
+  async generateImageToVideo(imageUri: string, options: any = {}): Promise<APIResponse<GenerationResponse>> {
+    try {
+      const formData = new FormData();
+      formData.append('image_file', {
+        uri: imageUri,
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      } as any);
+      formData.append('model', options.model || 'stable-video-diffusion');
+      formData.append('duration', options.duration || 3);
+      formData.append('fps', options.fps || 24);
+
+      const response = await fetch(`${this.baseURL}/advanced/generate/image-to-video`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      return { success: response.ok, data, error: !response.ok ? data.detail : undefined };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Request failed' };
+    }
+  }
+
+  // Talking Avatar Generation
+  async generateTalkingAvatar(imageUri: string, audioUri: string, model: string = 'sadtalker'): Promise<APIResponse<GenerationResponse>> {
+    try {
+      const formData = new FormData();
+      formData.append('image_file', {
+        uri: imageUri,
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      } as any);
+      formData.append('audio_file', {
+        uri: audioUri,
+        name: 'audio.mp3',
+        type: 'audio/mpeg',
+      } as any);
+      formData.append('model', model);
+
+      const response = await fetch(`${this.baseURL}/advanced/generate/talking-avatar`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      return { success: response.ok, data, error: !response.ok ? data.detail : undefined };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Request failed' };
+    }
+  }
+
+  // Voice Cloning
+  async cloneVoice(audioUri: string, text: string, model: string = 'coqui-tts'): Promise<APIResponse<GenerationResponse>> {
+    try {
+      const formData = new FormData();
+      formData.append('reference_audio', {
+        uri: audioUri,
+        name: 'voice.mp3',
+        type: 'audio/mpeg',
+      } as any);
+      formData.append('text', text);
+      formData.append('model', model);
+
+      const response = await fetch(`${this.baseURL}/advanced/generate/voice-clone`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      return { success: response.ok, data, error: !response.ok ? data.detail : undefined };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Request failed' };
+    }
+  }
+
+  // 3D Model Generation
+  async generate3DModel(prompt: string, model: string = 'shap-e'): Promise<APIResponse<GenerationResponse>> {
+    return this.makeRequest<GenerationResponse>('/advanced/generate/3d-model', {
+      method: 'POST',
+      body: JSON.stringify({ prompt, model }),
+    });
+  }
+
+  // Image Upscaling
+  async upscaleImage(imageUri: string, scale: number = 4, model: string = 'real-esrgan'): Promise<APIResponse<GenerationResponse>> {
+    try {
+      const formData = new FormData();
+      formData.append('image_file', {
+        uri: imageUri,
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      } as any);
+      formData.append('scale', scale.toString());
+      formData.append('model', model);
+
+      const response = await fetch(`${this.baseURL}/advanced/enhance/upscale`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      return { success: response.ok, data, error: !response.ok ? data.detail : undefined };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Request failed' };
+    }
+  }
+
+  // Background Removal
+  async removeBackground(imageUri: string): Promise<APIResponse<GenerationResponse>> {
+    try {
+      const formData = new FormData();
+      formData.append('image_file', {
+        uri: imageUri,
+        name: 'image.jpg',
+        type: 'image/jpeg',
+      } as any);
+
+      const response = await fetch(`${this.baseURL}/advanced/enhance/remove-background`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      return { success: response.ok, data, error: !response.ok ? data.detail : undefined };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Request failed' };
+    }
+  }
+
+  // Get Advanced Models List
+  async getAdvancedModels(feature?: string): Promise<APIResponse<any>> {
+    const url = feature ? `/advanced/models/list?feature=${feature}` : '/advanced/models/list';
+    return this.makeRequest<any>(url);
+  }
+
+  // Get Model Info
+  async getModelInfo(modelId: string): Promise<APIResponse<any>> {
+    return this.makeRequest<any>(`/advanced/models/${modelId}`);
+  }
+
+  // API KEY MANAGEMENT
+
+  // Set API Key
+  async setAPIKey(service: string, apiKey: string): Promise<APIResponse<{message: string}>> {
+    return this.makeRequest<{message: string}>('/advanced/api-keys/set', {
+      method: 'POST',
+      body: JSON.stringify({ service, api_key: apiKey }),
+    });
+  }
+
+  // Get User API Keys
+  async getUserAPIKeys(): Promise<APIResponse<{configured_services: string[], supported_services: any[]}>> {
+    return this.makeRequest<any>('/advanced/api-keys/list');
+  }
+
+  // Delete API Key
+  async deleteAPIKey(service: string): Promise<APIResponse<{message: string}>> {
+    return this.makeRequest<{message: string}>(`/advanced/api-keys/${service}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Get Supported Services
+  async getSupportedServices(): Promise<APIResponse<{services: any[]}>> {
+    return this.makeRequest<any>('/advanced/api-keys/services');
+  }
 }
 
 export const CloudAPIService = new CloudAPIServiceClass();
